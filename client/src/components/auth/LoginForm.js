@@ -1,24 +1,61 @@
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useState, useContext } from 'react'
+import { AuthContext } from '../../contexts/AuthContext'
 
 const LoginForm = () => {
+    //Context
+    const { loginUser } = useContext(AuthContext)
+
+    //History
+    const history = useNavigate()
+
+    const [loginForm, setLoginForm] = useState({
+        username: '',
+        password: ''
+    })
+
+    const { username, password } = loginForm
+
+    const onChangeLoginForm = event => setLoginForm({ ...loginForm, [event.target.name]: event.target.value })
+
+    const login = async event => {
+        event.preventDefault()
+
+        try {
+            const loginData = await loginUser(loginForm)
+            if (loginData.success) {
+                history("/dashboard")
+            } else {
+
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     return (
         <>
-            <Form className='my-2'>
+            <Form className='my-2' onSubmit={login}>
                 <Form.Group className='my-2' >
                     <Form.Control
                         type='text'
                         placeholder='Username'
                         name='username'
-                        required />
+                        required
+                        value={username}
+                        onChange={onChangeLoginForm}
+                    />
                 </Form.Group>
                 <Form.Group>
                     <Form.Control
-                        type='text'
+                        type='password'
                         placeholder='Password'
                         name='password'
-                        required />
+                        required
+                        value={password}
+                        onChange={onChangeLoginForm}
+                    />
                 </Form.Group>
                 <Button className='my-2'
                     variant='success'
